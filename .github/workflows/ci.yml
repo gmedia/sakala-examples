@@ -98,3 +98,30 @@ jobs:
           cp .env.example .env
           php artisan key:generate
           php artisan test
+
+  laravel-image:
+    name: Laravel image
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: laravel
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Build image
+        run: docker build -t sakala-example-laravel .
+
+      - name: Run like Sakala does
+        # Release command in a throwaway container, then the app with Sakala's
+        # capability set and PORT, with no database configured.
+        run: |
+          APP_KEY="base64:$(head -c 32 /dev/urandom | base64)"
+          CAPS="--cap-drop ALL --cap-add CHOWN --cap-add DAC_OVERRIDE --cap-add FOWNER --cap-add FSETID --cap-add KILL --cap-add SETGID --cap-add SETUID --cap-add NET_BIND_SERVICE --security-opt no-new-privileges"
+          docker run --rm $CAPS -e APP_KEY="$APP_KEY" sakala-example-laravel php artisan migrate --force
+          docker run -d --name app $CAPS -e APP_KEY="$APP_KEY" -e PORT=8123 -p 127.0.0.1:8123:8123 sakala-example-laravel
+          for attempt in $(seq 1 30); do
+            curl -fsS -o /dev/null http://127.0.0.1:8123/up && break
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:8123/ | grep -q "database belum dihubungkan" || { docker logs app; exit 1; }

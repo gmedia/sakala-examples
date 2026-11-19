@@ -16,7 +16,7 @@ Alamat repository untuk Console: `https://github.com/gmedia/sakala-examples`, br
 
 1. Di Console Sakala, buat project baru dari repository `https://github.com/gmedia/sakala-examples`.
 2. Di langkah **Konfigurasi**, isi **Root directory** dengan nama folder contohnya, misalnya `node-express`. Tanpa setelan ini Sakala membangun root repository, yang bukan aplikasi.
-3. Biarkan **Build command** dan **Start command** kosong. Railpack, yang membangun aplikasi tanpa Dockerfile, sudah tahu cara membangun dan menjalankan ketiga contoh ini.
+3. Biarkan **Build command** dan **Start command** kosong. Untuk `static-site` dan `node-express`, Railpack, yang membangun aplikasi tanpa Dockerfile, sudah tahu cara membangun dan menjalankannya. `laravel` dibangun dari `Dockerfile` di foldernya.
 4. Untuk `laravel`, isi juga **Release command** dan `APP_KEY`. Detailnya ada di [`laravel/README.md`](laravel/README.md).
 5. Tekan **Buat Proyek**, lalu **Deploy sekarang**.
 
@@ -35,7 +35,7 @@ Setiap folder punya README dengan perintah untuk menjalankan dan mengetesnya di 
 
 ## English
 
-This repository holds three small apps that deploy on [Sakala](https://sakala.dev). Each one lives in its own folder, so set **Root directory** to the folder name when you create the project: `static-site`, `node-express`, or `laravel`. Leave the build and start commands empty; Railpack detects each app.
+This repository holds three small apps that deploy on [Sakala](https://sakala.dev). Each one lives in its own folder, so set **Root directory** to the folder name when you create the project: `static-site`, `node-express`, or `laravel`. Leave the build and start commands empty: Railpack detects the static site and the Express app, and the Laravel app builds from its own `Dockerfile`.
 
 The Laravel example needs `APP_KEY` (generate it with `php artisan key:generate --show` and save it as a secret) and the release command `php artisan migrate --force`. It starts without a database and shows how to connect PostgreSQL through `DATABASE_URL`. See the [Sakala docs](https://sakala.dev/docs/) for details.
 
