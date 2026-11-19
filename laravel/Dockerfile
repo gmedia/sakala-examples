@@ -30,5 +30,9 @@ ENV APP_ENV=production \
 # Sakala sets PORT. 8080 is only the fallback for running the image yourself.
 EXPOSE 8080
 
+# The base image checks Caddy's admin port, which `php-server` does not open.
+# Sakala checks the app itself by requesting / on PORT.
+HEALTHCHECK NONE
+
 # Cache config and routes with the real environment variables, then serve public/.
 CMD ["sh", "-c", "php artisan optimize && exec frankenphp php-server --listen \":${PORT:-8080}\" --root public"]
