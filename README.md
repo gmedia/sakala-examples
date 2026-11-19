@@ -20,7 +20,7 @@ Alamat repository untuk Console: `https://github.com/gmedia/sakala-examples`, br
 4. Untuk `laravel`, isi juga **Release command** dan `APP_KEY`. Detailnya ada di [`laravel/README.md`](laravel/README.md).
 5. Tekan **Buat Proyek**, lalu **Deploy sekarang**.
 
-Contoh Laravel tetap jalan walau belum ada database. Halamannya menjelaskan cara menghubungkan PostgreSQL, karena Sakala belum menyediakan database terkelola.
+Contoh Laravel tetap jalan walau belum ada database. Untuk mengaktifkan buku tamunya, buat database di halaman **Database** Console, pasang ke project itu, lalu redeploy: Sakala mengisi `DATABASE_URL` dan `DB_*` sendiri. PostgreSQL di layanan lain tetap bisa dipakai lewat `DATABASE_URL`.
 
 ## Dokumentasi
 
@@ -37,7 +37,7 @@ Setiap folder punya README dengan perintah untuk menjalankan dan mengetesnya di 
 
 This repository holds three small apps that deploy on [Sakala](https://sakala.dev). Each one lives in its own folder, so set **Root directory** to the folder name when you create the project: `static-site`, `node-express`, or `laravel`. Leave the build and start commands empty: Railpack detects the static site and the Express app, and the Laravel app builds from its own `Dockerfile`.
 
-The Laravel example needs `APP_KEY` (generate it with `php artisan key:generate --show` and save it as a secret) and the release command `php artisan migrate --force`. It starts without a database and shows how to connect PostgreSQL through `DATABASE_URL`. See the [Sakala docs](https://sakala.dev/docs/) for details.
+The Laravel example needs `APP_KEY` (generate it with `php artisan key:generate --show` and save it as a secret) and the release command `php artisan migrate --force`. It starts without a database. To enable the guestbook, create a database on the Console's **Database** page, attach it to the project, and redeploy; Sakala injects `DATABASE_URL` and `DB_*`. An external PostgreSQL still works through `DATABASE_URL`. See the [Sakala docs](https://sakala.dev/docs/) for details.
 
 ## Lisensi
 
