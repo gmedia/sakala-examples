@@ -102,10 +102,11 @@
             <h2 id="no-db-title" style="margin-top: 0">Aplikasi sudah jalan, database belum dihubungkan</h2>
             <p>Halaman ini tetap tampil walau belum ada database. Untuk mengaktifkan buku tamu:</p>
             <ol>
-                <li>Siapkan database PostgreSQL di layanan lain.</li>
-                <li>Di tab <strong>Environment Variables</strong> project-mu, isi <code>DATABASE_URL</code> sebagai rahasia, misalnya <code>postgres://user:password@host:5432/nama_db?sslmode=require</code>.</li>
+                <li>Di Console Sakala, buka halaman <strong>Database</strong> dan buat database PostgreSQL.</li>
+                <li>Di halaman database itu, tekan <strong>Pasang ke proyek</strong> dan pilih project ini. Sakala mengisi <code>DATABASE_URL</code> dan <code>DB_*</code> sendiri setiap deploy, jadi tidak perlu disalin.</li>
                 <li>Pastikan <strong>Release command</strong> berisi <code>php artisan migrate --force</code>, lalu tekan <strong>Redeploy</strong>.</li>
             </ol>
+            <p class="meta">Sudah punya PostgreSQL di layanan lain? Isi <code>DATABASE_URL</code> sebagai secret di tab <strong>Variabel</strong> project ini, lalu redeploy.</p>
         </section>
     @elseif ($state === \App\Support\GuestbookState::Unavailable)
         <section class="notice error" role="alert">

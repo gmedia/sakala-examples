@@ -2,7 +2,15 @@
 
 Buku tamu kecil dengan Laravel 13: pengunjung menulis pesan, aplikasi menyimpannya ke PostgreSQL dan menampilkan 20 pesan terbaru. Tabelnya dibuat oleh satu migration yang Sakala jalankan lewat **Release command**, yaitu perintah yang berjalan sekali setiap deployment sebelum versi baru menerima trafik.
 
-Aplikasi ini tetap jalan walau belum ada database. Tanpa variabel database, halamannya menjelaskan cara menghubungkan PostgreSQL, dan `php artisan migrate --force` tetap selesai dengan sukses karena berjalan ke database SQLite sementara di memori yang tidak menyimpan apa pun. Jadi contoh ini bisa di-deploy sebelum kamu punya database.
+Aplikasi ini tetap jalan walau belum ada database. Tanpa variabel database, halamannya menjelaskan cara memasang database, dan `php artisan migrate --force` tetap selesai dengan sukses karena berjalan ke database SQLite sementara di memori yang tidak menyimpan apa pun. Jadi contoh ini bisa di-deploy sebelum kamu punya database.
+
+## Menghubungkan database
+
+1. Di Console Sakala, buka halaman **Database** dan buat database PostgreSQL.
+2. Di halaman database itu, tekan **Pasang ke proyek** dan pilih project contoh ini.
+3. Tekan **Redeploy** di project. Sakala mengisi `DATABASE_URL`, `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD` sendiri setiap deploy, jadi variabel itu tidak perlu disalin ke tab **Variabel**. Release command lalu membuat tabelnya, dan buku tamu aktif.
+
+PostgreSQL di layanan lain tetap bisa dipakai: isi `DATABASE_URL` sebagai secret di tab **Variabel**, lalu redeploy.
 
 ## Setelan di Sakala
 
@@ -18,9 +26,9 @@ Environment variables:
 | Nama           | Wajib                     | Isinya                                                                                                                                                       |
 | -------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `APP_KEY`      | ya                        | Kunci enkripsi Laravel. Buat dengan `php artisan key:generate --show` di laptop, lalu simpan sebagai rahasia. Jangan pernah commit kunci sungguhan.             |
-| `DATABASE_URL` | tidak, untuk buku tamu    | Alamat PostgreSQL, misalnya `postgres://user:password@host:5432/nama_db?sslmode=require`. Simpan sebagai rahasia. Tanpa ini aplikasi menampilkan petunjuk koneksi. |
+| `DATABASE_URL` | tidak                     | Terisi otomatis kalau database Sakala dipasang ke project ini. Isi sendiri hanya untuk PostgreSQL di layanan lain, misalnya `postgres://user:password@host:5432/nama_db?sslmode=require`, sebagai secret. Tanpa database, aplikasi menampilkan petunjuk. |
 
-Sebagai ganti `DATABASE_URL`, kamu bisa mengisi `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD`. Begitu salah satu dari `DATABASE_URL`, `DB_URL`, atau `DB_HOST` terisi, aplikasi memakai PostgreSQL. Kalau `APP_KEY` kosong, halaman gagal dengan error 500 karena Laravel tidak bisa mengenkripsi cookie session.
+Untuk PostgreSQL di layanan lain, sebagai ganti `DATABASE_URL` kamu juga bisa mengisi `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD`. Begitu salah satu dari `DATABASE_URL`, `DB_URL`, atau `DB_HOST` terisi, aplikasi memakai PostgreSQL. Kalau `APP_KEY` kosong, halaman gagal dengan error 500 karena Laravel tidak bisa mengenkripsi cookie session.
 
 `Dockerfile` mengisi `APP_ENV=production` dan `APP_DEBUG=false`, jadi detail error tidak tampil ke pengunjung.
 
@@ -65,4 +73,4 @@ Halaman ada di `resources/views/guestbook.blade.php`, logikanya di `app/Http/Con
 
 ## English
 
-A small Laravel 13 guestbook backed by PostgreSQL. Sakala builds it from the `Dockerfile` in this folder. Set **Root directory** to `laravel` and **Release command** to `php artisan migrate --force`. `APP_KEY` is required: generate it with `php artisan key:generate --show` and save it as a secret. Set `DATABASE_URL` (or `DB_HOST` and friends) to enable the guestbook; without it the app still starts and explains how to connect a database, and the release command succeeds against a throwaway in-memory SQLite database.
+A small Laravel 13 guestbook backed by PostgreSQL. Sakala builds it from the `Dockerfile` in this folder. Set **Root directory** to `laravel` and **Release command** to `php artisan migrate --force`. `APP_KEY` is required: generate it with `php artisan key:generate --show` and save it as a secret. To enable the guestbook, create a database on Sakala's **Database** page, attach it to the project, and redeploy: Sakala injects `DATABASE_URL` and the `DB_*` variables at every deployment. An external PostgreSQL still works through `DATABASE_URL` (or `DB_HOST` and friends). Without a database the app still starts and explains how to attach one, and the release command succeeds against a throwaway in-memory SQLite database.

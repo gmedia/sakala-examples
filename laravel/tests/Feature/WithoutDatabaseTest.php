@@ -26,6 +26,15 @@ class WithoutDatabaseTest extends TestCase
             ->assertDontSee('Tinggalkan pesan');
     }
 
+    public function test_page_points_to_the_database_page_before_an_external_database(): void
+    {
+        $this->get('/')
+            ->assertSeeInOrder(['halaman <strong>Database</strong>', 'Pasang ke proyek', 'Redeploy'], escape: false)
+            ->assertSee('Sudah punya PostgreSQL di layanan lain?')
+            ->assertDontSee('Environment Variables')
+            ->assertDontSee('Siapkan database PostgreSQL di layanan lain');
+    }
+
     public function test_posting_without_a_database_redirects_back(): void
     {
         $this->post('/entries', ['name' => 'Tamu', 'message' => 'Halo'])
