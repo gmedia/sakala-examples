@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  static-site:
+    name: Static site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Validate HTML
+        run: npx --yes html-validate@11.21.1 static-site/public
+
+  node-express:
+    name: Node Express
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: node-express
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: node-express/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test
+        run: npm test
+
+      - name: Smoke test npm start
+        run: |
+          PORT=8080 npm start &
+          for attempt in $(seq 1 20); do
+            curl -fsS -o /dev/null http://127.0.0.1:8080/healthz && break
+            sleep 0.5
+          done
+          curl -fsS http://127.0.0.1:8080/ | grep -q "Halo dari Express di Sakala"
+          curl -fsS http://127.0.0.1:8080/healthz | grep -q '"status":"ok"'
+
+  laravel:
+    name: Laravel
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: laravel
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: pdo_sqlite, pdo_pgsql
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Check formatting
+        run: vendor/bin/pint --test
+
+      - name: Smoke test without a database
+        # Same situation as a first deploy on Sakala: no .env, no database
+        # variables, only APP_KEY. The release command must still exit 0.
+        run: |
+          export APP_KEY="$(php artisan key:generate --show)" APP_ENV=production APP_DEBUG=false
+          php artisan migrate --force
+          php artisan serve --port=8000 > /tmp/serve.log 2>&1 &
+          for attempt in $(seq 1 20); do
+            curl -fsS -o /dev/null http://127.0.0.1:8000/up && break
+            sleep 0.5
+          done
+          curl -fsS http://127.0.0.1:8000/ | grep -q "database belum dihubungkan"
+
+      - name: Test
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan test

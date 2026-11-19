@@ -1,0 +1,2 @@
+# Railpack serves this folder with Caddy. Only files under public/ are published.
+root: public

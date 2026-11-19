@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Halo dari Sakala</title>
+  <meta name="description" content="Contoh situs statis satu halaman yang di-deploy di Sakala.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#isi">Langsung ke isi</a>
+  <main id="isi">
+    <h1>Halo dari Sakala</h1>
+    <p class="lead">Halaman ini adalah situs statis: satu berkas HTML dan satu berkas CSS, tanpa langkah build. Sakala menyajikannya apa adanya.</p>
+
+    <section aria-labelledby="cara-ubah">
+      <h2 id="cara-ubah">Cara mengubah halaman ini</h2>
+      <ol>
+        <li>Buka <code>public/index.html</code> untuk mengubah teks, atau <code>public/style.css</code> untuk mengubah tampilan.</li>
+        <li>Commit dan push ke GitHub.</li>
+        <li>Tekan <strong>Redeploy</strong> di Console Sakala, atau tunggu auto-deploy kalau sudah menyala.</li>
+      </ol>
+      <p>Berkas lain yang kamu taruh di folder <code>public/</code>, misalnya gambar atau halaman kedua, ikut tersaji di alamat yang sama.</p>
+    </section>
+
+    <section aria-labelledby="cara-kerja">
+      <h2 id="cara-kerja">Cara kerjanya</h2>
+      <p>Sakala membangun folder ini dengan Railpack. Berkas <code>Staticfile</code> memberi tahu Railpack bahwa isi situsnya ada di <code>public/</code>, lalu Caddy menyajikannya di port yang Sakala berikan.</p>
+    </section>
+
+    <p>Panduan lengkap ada di <a href="https://sakala.dev/docs/deploy-pertama">dokumentasi Sakala</a>.</p>
+  </main>
+</body>
+</html>

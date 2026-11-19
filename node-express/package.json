@@ -1,0 +1,19 @@
+{
+  "name": "sakala-example-node-express",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Minimal Express app that deploys on Sakala.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "express": "^5.3.0"
+  }
+}
