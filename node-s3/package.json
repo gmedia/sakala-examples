@@ -1,0 +1,25 @@
+{
+  "name": "sakala-example-node-s3",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Express app that stores uploads in a Sakala managed bucket over the S3 API.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1176.0",
+    "@aws-sdk/lib-storage": "^3.1176.0",
+    "@aws-sdk/s3-request-presigner": "^3.1176.0",
+    "busboy": "^1.6.0",
+    "escape-html": "^1.0.3",
+    "express": "^5.3.0",
+    "mime-types": "^3.0.2"
+  }
+}
