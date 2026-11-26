@@ -162,3 +162,67 @@ jobs:
             sleep 1
           done
           curl -fsS http://127.0.0.1:8123/ | grep -q "database belum dihubungkan" || { docker logs app; exit 1; }
+
+  laravel-queue:
+    name: Laravel queue
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: laravel-queue
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: pdo_sqlite, pdo_pgsql
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Check formatting
+        run: vendor/bin/pint --test
+
+      - name: Smoke test without a database
+        # A first deploy on Sakala: no .env, no database or Valkey variables,
+        # only APP_KEY. The release command must still exit 0, and the worker
+        # must idle on the sync queue instead of failing.
+        run: |
+          export APP_KEY="$(php artisan key:generate --show)" APP_ENV=production APP_DEBUG=false
+          php artisan migrate --force
+          test "$(php artisan config:show queue.default | grep -c sync)" -ge 1
+          timeout 5 php artisan queue:work --stop-when-empty
+          php artisan serve --port=8000 > /tmp/serve.log 2>&1 &
+          for attempt in $(seq 1 20); do
+            curl -fsS -o /dev/null http://127.0.0.1:8000/up && break
+            sleep 0.5
+          done
+          curl -fsS http://127.0.0.1:8000/ | grep -q "database belum dihubungkan"
+
+      - name: Test
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan test
+
+  laravel-queue-image:
+    name: Laravel queue image
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: laravel-queue
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Build image
+        run: docker build -t sakala-example-laravel-queue .
+
+      - name: Run web, worker, and schedule like Sakala does
+        # PostgreSQL and Valkey in containers, then the release command, web,
+        # worker, and one-off commands from the same image; once with Valkey
+        # and once with the database queue.
+        run: tests/image-smoke.sh sakala-example-laravel-queue
